@@ -488,12 +488,13 @@ void histo_new(const char* dirname,  int channel = 1, TString outfile = "histogr
         float effitiencyErr = sqrt(integral_after*(integral_all-integral_after)/pow(integral_after,3));
 
         float prob = (integral_before/integral_all)*(integral_allPed/integral_beforePed);
-        float probErr = sqrt(integral_before*(integral_all-integral_before)/pow(integral_before,3)) + sqrt(integral_allPed*(integral_allPed-integral_beforePed)/pow(integral_allPed,3));
+        //float probErr = sqrt(integral_before*(integral_all-integral_before)/pow(integral_before,3)) + sqrt(integral_allPed*(integral_allPed-integral_beforePed)/pow(integral_allPed,3));
 
 	//float Npe = -log(1-effitiency);
         //float NpeErr = effitiencyErr/(1-effitiency);
 	Npe = -log(prob);
-        NpeErr = probErr/prob;
+        //NpeErr = probErr/prob;
+        NpeErr = sqrt( (integral_all-integral_before)/integral_all*integral_before + (integral_allPed-integral_beforePed)/integral_allPed*integral_beforePed );
 	
         cout<<"border1:"<<border1<<endl;
         cout<<"integral_after:"<<integral_after<<endl;
