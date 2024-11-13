@@ -460,24 +460,24 @@ void histo_new(const char* dirname,  int channel = 1, TString outfile = "histogr
     	hAmpPedCor->Draw();
     	hAmpSigCor->Draw("sames");
 
-	cout<<"============== Nphe calculation =====>> from pulse amplitude ============================"<<endl;
-	TF1* fitG = new TF1("fitG","gaus",-30.,100.);
-	hAmpPedCor->Fit("fitG","Q","",-30.,10.);
-	Double_t g1 = fitG->GetParameter(1);
+	    cout<<"============== Nphe calculation =====>> from pulse amplitude ============================"<<endl;
+	    TF1* fitG = new TF1("fitG","gaus",-30.,100.);
+	    hAmpPedCor->Fit("fitG","Q","",-30.,10.);
+	    Double_t g1 = fitG->GetParameter(1);
         Double_t g2 = fitG->GetParameter(2);
-	float border1 = g1 + 4.0*g2;
-	//float border1 = 10.; //from hAmpPedCor
+	    float border1 = g1 + 4.0*g2;
+	    //float border1 = 10.; //from hAmpPedCor
 
-	//Calculation from Puasson
-	int binBorder1 = hAmpSigCor->GetXaxis()->FindBin(border1);
+	    //Calculation from Puasson
+	    int binBorder1 = hAmpSigCor->GetXaxis()->FindBin(border1);
         int firstbin = hAmpSigCor->GetXaxis()->FindBin(bHist1);
         int lastbin = hAmpSigCor->GetXaxis()->FindBin(bHist2);	
 
-	float integral_before = hAmpSigCor->Integral(firstbin,binBorder1);
+	    float integral_before = hAmpSigCor->Integral(firstbin,binBorder1);
         float integral_after = hAmpSigCor->Integral(binBorder1,lastbin);
         float integral_all = hAmpSigCor->Integral(firstbin,lastbin);
 
-	int firstbinPed = hAmpPedCor->GetXaxis()->FindBin(bHist1);
+	    int firstbinPed = hAmpPedCor->GetXaxis()->FindBin(bHist1);
         int lastbinPed = hAmpPedCor->GetXaxis()->FindBin(bHist2);
 
         float integral_beforePed = hAmpPedCor->Integral(firstbinPed,binBorder1);
@@ -490,21 +490,25 @@ void histo_new(const char* dirname,  int channel = 1, TString outfile = "histogr
         float prob = (integral_before/integral_all)*(integral_allPed/integral_beforePed);
         //float probErr = sqrt(integral_before*(integral_all-integral_before)/pow(integral_before,3)) + sqrt(integral_allPed*(integral_allPed-integral_beforePed)/pow(integral_allPed,3));
 
-	//float Npe = -log(1-effitiency);
+	    //float Npe = -log(1-effitiency);
         //float NpeErr = effitiencyErr/(1-effitiency);
-	Npe = -log(prob);
+	    Npe = -log(prob);
         //NpeErr = probErr/prob;
-        NpeErr = sqrt( (integral_all-integral_before)/integral_all*integral_before + (integral_allPed-integral_beforePed)/integral_allPed*integral_beforePed );
+        NpeErr = sqrt( (integral_all-integral_before)/(integral_all*integral_before) + (integral_allPed-integral_beforePed)/(integral_allPed*integral_beforePed) );
 	
         cout<<"border1:"<<border1<<endl;
         cout<<"integral_after:"<<integral_after<<endl;
+        cout<<"integral_before:"<<integral_before<<endl;
         cout<<"integral_all:"<<integral_all<<endl;
-	cout<<"Aped = " << g1 <<endl;
-	cout<<"Ch_Ampl. = " << hAmpSigCor->GetMean() <<" +/- "<<hAmpSigCor->GetRMS()<<endl;
-	cout<<"Ch_Ampl.-Aped = " << hAmpSigCor->GetMean() - g1 <<endl;
+        cout<<"integral_afterPed:"<<integral_afterPed<<endl;
+        cout<<"integral_beforePed:"<<integral_beforePed<<endl;
+        cout<<"integral_allPed:"<<integral_allPed<<endl;
+        cout<<"Aped = " << g1 <<endl;
+	    cout<<"Ch_Ampl. = " << hAmpSigCor->GetMean() <<" +/- "<<hAmpSigCor->GetRMS()<<endl;
+	    cout<<"Ch_Ampl.-Aped = " << hAmpSigCor->GetMean() - g1 <<endl;
 
-	cout<<"Nph.e. = " << Npe <<" +/- "<< NpeErr <<endl;
-	cout<<"Amp 1ph.e. = " << (hAmpSigCor->GetMean() - g1)/Npe <<" +/- "<<NpeErr<<endl;
+	    cout<<"Nph.e. = " << Npe <<" +/- "<< NpeErr <<endl;
+	    cout<<"Amp 1ph.e. = " << (hAmpSigCor->GetMean() - g1)/Npe <<" +/- "<<NpeErr<<endl;
 
 
         Freq = (integral_afterPed/integral_allPed)/(binPed2-binPed1)*pow(10,9);
@@ -670,7 +674,7 @@ void histo_new(const char* dirname,  int channel = 1, TString outfile = "histogr
             hnacor->Fill(vNoiseChargeAmpCor[i]);
         }
 
-	Nmm = hnacor->GetMean();
+	    Nmm = hnacor->GetMean();
     	Nrms= hnacor->GetRMS();
     	cout<<"Noise spectrum:"<<"\t"<<"A="<<Nmm<<"+-"<<Nrms<<endl;
 
